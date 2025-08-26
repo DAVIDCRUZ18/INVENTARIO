@@ -6,20 +6,24 @@
     <title>INGRESO A DASHBOARD</title>
     <link rel="stylesheet" href="/css/dashboard.css">
     <script src="/Javascrip/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
     <div class="login-container">
 
         <h1>Acceso con tu cuenta</h1>
-        <div class="icon">
-            <img src="/Imagenes/Moto_1.webp" alt="Moto" class="moto_dashboard">
+        <div>
+            <button class="btn_principal" onclick="IrPrincipal()"><img src="/Imagenes/Moto_1.webp" alt="Moto_principal" class="Moto_principal"></button>
         </div>
         <div class="separator"></div>
+        <div class="usuario">ingrese el usuario</div>
         <div class="separator"></div>
+        <div class="contraseña">ingrese el usuario</div>
         <div class="separator"></div>
+        <div class="contenedor">
+        <button class="btn_principal" onclick="Ingresar()">INGRESAR</button>
     </div>
-
-
+    </div>
     <div class="footer">
             <p>Control de existencias de Inventario Versión 17.08.24 Rev. 1</p>
     </div>

@@ -17,7 +17,20 @@ body {
     display: flex;
     justify-content: center;
 }
-.moto_dashboard {
-    max-width: 150px;
-    margin: 20px auto;
+.btn_principal {
+    float: center;
+    background: linear-gradient(#2a70c9, #1e5aa8);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+.Moto_principal {
+    float: left;
+    max-width: 300px;
 }

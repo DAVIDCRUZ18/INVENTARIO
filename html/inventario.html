@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INVENTARIO</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="/Javascrip/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-blue-100 min-h-screen flex flex-col items-center font-sans">
+
+    <!-- Encabezado -->
+    <header class="w-full bg-blue-200 shadow-md p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+        <img src="/Imagenes/Moto_1.webp" alt="Moto" class="w-20 h-20 object-contain">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">AR MOTOS</h1>
+            <h2 class="text-sm text-gray-600">ENTRADA DE INVENTARIO</h2>
+        </div>
+        </div>
+        <!-- Fecha -->
+        <div class="flex flex-col items-end">
+        <input type="date" class="border rounded-md px-3 py-1 text-sm">
+        </div>
+    </header>
+
+    <!-- Menú -->
+    <nav class="w-full bg-gray-100 shadow-sm flex gap-6 px-6 py-2 text-sm">
+        <button class="hover:text-blue-600">Inicio</button>
+        <button class="hover:text-blue-600">Inventario</button>
+        <button class="hover:text-blue-600">Salidas</button>
+        <button class="hover:text-blue-600">Stock</button>
+    </nav>
+
+    <!-- Formulario principal -->
+    <main class="bg-white shadow-lg rounded-2xl p-6 mt-6 w-11/12 max-w-5xl">
+        <div class="grid grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-semibold text-gray-700">Proveedor</label>
+            <input type="text" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700">N° Factura</label>
+            <input type="text" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700">NIT</label>
+            <input type="text" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700">Consecutivo</label>
+            <input type="text" class="w-full border rounded-md px-3 py-2">
+        </div>
+        <div class="col-span-2">
+            <label class="block text-sm font-semibold text-gray-700">Forma de pago</label>
+            <select class="w-full border rounded-md px-3 py-2">
+            <option>Seleccione</option>
+            <option>Contado</option>
+            <option>Crédito</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="mt-6">
+        <table class="w-full border text-sm text-center">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="border px-2 py-1">Código</th>
+                <th class="border px-2 py-1">Descripción</th>
+                <th class="border px-2 py-1">Referencia</th>
+                <th class="border px-2 py-1">Cantidad</th>
+                <th class="border px-2 py-1">V. Unitario</th>
+                <th class="border px-2 py-1">Total</th>
+                <th class="border px-2 py-1">Ubicación</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+                <td class="border px-2 py-1"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Responsable -->
+    <div class="mt-6">
+        <label class="block text-sm font-semibold text-gray-700">Responsable</label>
+        <select class="w-full border rounded-md px-3 py-2">
+            <option>Seleccione responsable</option>
+        </select>
+    </div>
+
+    <!-- Botones -->
+        <div class="flex justify-end gap-3 mt-6">
+        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md">Grabar</button>
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-md">Cancelar</button>
+        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-md">Eliminar</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-gray-800 text-white text-center py-3 mt-6 text-xs">
+        Control de existencias de Inventario Versión 17.08.24 Rev. 1
+    </footer>
+</body>
+</html>

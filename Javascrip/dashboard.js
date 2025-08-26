@@ -1,6 +1,6 @@
-function irPagina() {
-    window.location.href = "/html/dashboard.html";
+function IrPrincipal() {
+    window.location.href = "/index.html";
 }
-function irPagina() {
-    window.location.href = "/html/dashboard.html";
+function Ingresar() {
+    window.location.href = "/html/inventario.html";
 }
