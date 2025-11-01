@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVENTARIO</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <script src="/Javascrip/dashboard.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-blue-100 min-h-screen flex flex-col items-center font-sans">
@@ -14,22 +12,23 @@
     <!-- Encabezado -->
     <header class="w-full bg-blue-200 shadow-md p-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-        <img src="/Imagenes/Moto_1.webp" alt="Moto" class="w-20 h-20 object-contain">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">AR MOTOS</h1>
-            <h2 class="text-sm text-gray-600">ENTRADA DE INVENTARIO</h2>
+            <div class="w-20 h-20 bg-gray-300 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">🏍️</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">AR MOTOS</h1>
+                <h2 class="text-sm text-gray-600">ENTRADA DE INVENTARIO</h2>
+            </div>
         </div>
-        </div>
-        <!-- Fecha -->
         <div class="flex flex-col items-end">
-        <input type="date" class="border rounded-md px-3 py-1 text-sm">
+            <input type="date" id="fecha" class="border rounded-md px-3 py-1 text-sm">
         </div>
     </header>
 
     <!-- Menú -->
     <nav class="w-full bg-gray-100 shadow-sm flex gap-6 px-6 py-2 text-sm">
         <button class="hover:text-blue-600">Inicio</button>
-        <button class="hover:text-blue-600">Inventario</button>
+        <button class="hover:text-blue-600" onclick="cargarProductos()">Inventario</button>
         <button class="hover:text-blue-600">Salidas</button>
         <button class="hover:text-blue-600">Stock</button>
     </nav>
@@ -37,79 +36,304 @@
     <!-- Formulario principal -->
     <main class="bg-white shadow-lg rounded-2xl p-6 mt-6 w-11/12 max-w-5xl">
         <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label class="block text-sm font-semibold text-gray-700">Proveedor</label>
-            <input type="text" class="w-full border rounded-md px-3 py-2">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Proveedor</label>
+                <input type="text" id="proveedor" class="w-full border rounded-md px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">N° Factura</label>
+                <input type="text" id="factura" class="w-full border rounded-md px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">NIT</label>
+                <input type="text" id="nit" class="w-full border rounded-md px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Consecutivo</label>
+                <input type="text" id="consecutivo" class="w-full border rounded-md px-3 py-2">
+            </div>
+            <div class="col-span-2">
+                <label class="block text-sm font-semibold text-gray-700">Forma de pago</label>
+                <select id="formaPago" class="w-full border rounded-md px-3 py-2">
+                    <option>Seleccione</option>
+                    <option>Contado</option>
+                    <option>Crédito</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <label class="block text-sm font-semibold text-gray-700">N° Factura</label>
-            <input type="text" class="w-full border rounded-md px-3 py-2">
+
+        <!-- Formulario de Producto -->
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 class="text-lg font-bold mb-3 text-gray-700">Agregar Producto</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Código</label>
+                    <input type="text" id="codigo" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Descripción</label>
+                    <input type="text" id="descripcion" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Referencia</label>
+                    <input type="text" id="referencia" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Cantidad</label>
+                    <input type="number" id="cantidad" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">V. Unitario</label>
+                    <input type="number" step="0.01" id="precio" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Ubicación</label>
+                    <input type="text" id="ubicacion" class="w-full border rounded-md px-3 py-2">
+                </div>
+            </div>
+            <button onclick="agregarProducto()" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                + Agregar a la tabla
+            </button>
         </div>
-        <div>
-            <label class="block text-sm font-semibold text-gray-700">NIT</label>
-            <input type="text" class="w-full border rounded-md px-3 py-2">
+
+        <!-- Tabla -->
+        <div class="mt-6 overflow-x-auto">
+            <table class="w-full border text-sm text-center">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="border px-2 py-2">Código</th>
+                        <th class="border px-2 py-2">Descripción</th>
+                        <th class="border px-2 py-2">Referencia</th>
+                        <th class="border px-2 py-2">Cantidad</th>
+                        <th class="border px-2 py-2">V. Unitario</th>
+                        <th class="border px-2 py-2">Total</th>
+                        <th class="border px-2 py-2">Ubicación</th>
+                        <th class="border px-2 py-2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <tr>
+                        <td colspan="8" class="border px-2 py-4 text-gray-500">No hay productos agregados</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div>
-            <label class="block text-sm font-semibold text-gray-700">Consecutivo</label>
-            <input type="text" class="w-full border rounded-md px-3 py-2">
-        </div>
-        <div class="col-span-2">
-            <label class="block text-sm font-semibold text-gray-700">Forma de pago</label>
-            <select class="w-full border rounded-md px-3 py-2">
-            <option>Seleccione</option>
-            <option>Contado</option>
-            <option>Crédito</option>
+
+        <!-- Responsable -->
+        <div class="mt-6">
+            <label class="block text-sm font-semibold text-gray-700">Responsable</label>
+            <select id="responsable" class="w-full border rounded-md px-3 py-2">
+                <option>Seleccione responsable</option>
+                <option>Administrador</option>
+                <option>Bodeguero</option>
             </select>
         </div>
-    </div>
 
-    <!-- Tabla -->
-    <div class="mt-6">
-        <table class="w-full border text-sm text-center">
-            <thead class="bg-gray-200">
-            <tr>
-                <th class="border px-2 py-1">Código</th>
-                <th class="border px-2 py-1">Descripción</th>
-                <th class="border px-2 py-1">Referencia</th>
-                <th class="border px-2 py-1">Cantidad</th>
-                <th class="border px-2 py-1">V. Unitario</th>
-                <th class="border px-2 py-1">Total</th>
-                <th class="border px-2 py-1">Ubicación</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-                <td class="border px-2 py-1"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Responsable -->
-    <div class="mt-6">
-        <label class="block text-sm font-semibold text-gray-700">Responsable</label>
-        <select class="w-full border rounded-md px-3 py-2">
-            <option>Seleccione responsable</option>
-        </select>
-    </div>
-
-    <!-- Botones -->
+        <!-- Botones -->
         <div class="flex justify-end gap-3 mt-6">
-        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md">Grabar</button>
-        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-md">Cancelar</button>
-        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-md">Eliminar</button>
+            <button onclick="grabarTodos()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md">Grabar</button>
+            <button onclick="cancelar()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md shadow-md">Cancelar</button>
+            <button onclick="eliminarTodos()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-md">Eliminar Todo</button>
         </div>
+
+        <!-- Mensajes -->
+        <div id="mensaje" class="mt-4 hidden p-3 rounded-md"></div>
     </main>
 
     <!-- Footer -->
     <footer class="w-full bg-gray-800 text-white text-center py-3 mt-6 text-xs">
         Control de existencias de Inventario Versión 17.08.24 Rev. 1
     </footer>
+
+    <script>
+        // URL base de la API
+        const API_URL = 'http://localhost:8080/api/productos';
+        
+        // Array temporal para almacenar productos antes de grabar
+        let productosTemp = [];
+
+        // Establecer fecha actual
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // Función para mostrar mensajes
+        function mostrarMensaje(texto, tipo) {
+            const mensaje = document.getElementById('mensaje');
+            mensaje.textContent = texto;
+            mensaje.className = `mt-4 p-3 rounded-md ${tipo === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            mensaje.classList.remove('hidden');
+            setTimeout(() => mensaje.classList.add('hidden'), 3000);
+        }
+
+        // Agregar producto a la tabla temporal
+        function agregarProducto() {
+            const codigo = document.getElementById('codigo').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const referencia = document.getElementById('referencia').value;
+            const cantidad = document.getElementById('cantidad').value;
+            const precio = document.getElementById('precio').value;
+            const ubicacion = document.getElementById('ubicacion').value;
+
+            if (!codigo || !descripcion || !cantidad || !precio) {
+                mostrarMensaje('Por favor complete los campos obligatorios', 'error');
+                return;
+            }
+
+            const total = (parseFloat(cantidad) * parseFloat(precio)).toFixed(2);
+
+            const producto = {
+                codigo,
+                nombre: descripcion,
+                descripcion: referencia,
+                cantidad: parseInt(cantidad),
+                precio: parseFloat(precio),
+                ubicacion,
+                total
+            };
+
+            productosTemp.push(producto);
+            actualizarTabla();
+            limpiarFormulario();
+            mostrarMensaje('Producto agregado a la tabla', 'success');
+        }
+
+        // Actualizar tabla con productos temporales
+        function actualizarTabla() {
+            const tbody = document.getElementById('tablaProductos');
+            
+            if (productosTemp.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="border px-2 py-4 text-gray-500">No hay productos agregados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = productosTemp.map((p, index) => `
+                <tr>
+                    <td class="border px-2 py-2">${p.codigo}</td>
+                    <td class="border px-2 py-2">${p.nombre}</td>
+                    <td class="border px-2 py-2">${p.descripcion}</td>
+                    <td class="border px-2 py-2">${p.cantidad}</td>
+                    <td class="border px-2 py-2">$${p.precio}</td>
+                    <td class="border px-2 py-2">$${p.total}</td>
+                    <td class="border px-2 py-2">${p.ubicacion}</td>
+                    <td class="border px-2 py-2">
+                        <button onclick="eliminarProductoTemp(${index})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Eliminar producto de la tabla temporal
+        function eliminarProductoTemp(index) {
+            productosTemp.splice(index, 1);
+            actualizarTabla();
+            mostrarMensaje('Producto eliminado de la tabla', 'success');
+        }
+
+        // Grabar todos los productos en el backend
+        async function grabarTodos() {
+            if (productosTemp.length === 0) {
+                mostrarMensaje('No hay productos para grabar', 'error');
+                return;
+            }
+
+            try {
+                for (const producto of productosTemp) {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(producto)
+                    });
+                }
+                
+                mostrarMensaje('Todos los productos fueron grabados exitosamente', 'success');
+                productosTemp = [];
+                actualizarTabla();
+                limpiarFormulario();
+            } catch (error) {
+                mostrarMensaje('Error al grabar productos: ' + error.message, 'error');
+            }
+        }
+
+        // Cargar productos del backend
+        async function cargarProductos() {
+            try {
+                const response = await fetch(API_URL);
+                const productos = await response.json();
+                
+                const tbody = document.getElementById('tablaProductos');
+                
+                if (productos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="border px-2 py-4 text-gray-500">No hay productos en el inventario</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = productos.map(p => `
+                    <tr>
+                        <td class="border px-2 py-2">${p.id || '-'}</td>
+                        <td class="border px-2 py-2">${p.nombre}</td>
+                        <td class="border px-2 py-2">${p.descripcion || '-'}</td>
+                        <td class="border px-2 py-2">${p.cantidad}</td>
+                        <td class="border px-2 py-2">$${p.precio}</td>
+                        <td class="border px-2 py-2">$${(p.cantidad * p.precio).toFixed(2)}</td>
+                        <td class="border px-2 py-2">${p.ubicacion || '-'}</td>
+                        <td class="border px-2 py-2">
+                            <button onclick="eliminarProducto(${p.id})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                mostrarMensaje('Productos cargados desde el servidor', 'success');
+                productosTemp = [];
+            } catch (error) {
+                mostrarMensaje('Error al cargar productos: ' + error.message, 'error');
+            }
+        }
+
+        // Eliminar producto del backend
+        async function eliminarProducto(id) {
+            if (!confirm('¿Está seguro de eliminar este producto?')) return;
+            
+            try {
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                mostrarMensaje('Producto eliminado exitosamente', 'success');
+                cargarProductos();
+            } catch (error) {
+                mostrarMensaje('Error al eliminar producto: ' + error.message, 'error');
+            }
+        }
+
+        // Eliminar todos los productos temporales
+        function eliminarTodos() {
+            if (!confirm('¿Está seguro de eliminar todos los productos de la tabla?')) return;
+            productosTemp = [];
+            actualizarTabla();
+            mostrarMensaje('Tabla limpiada', 'success');
+        }
+
+        // Cancelar operación
+        function cancelar() {
+            limpiarFormulario();
+            productosTemp = [];
+            actualizarTabla();
+            mostrarMensaje('Operación cancelada', 'success');
+        }
+
+        // Limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('codigo').value = '';
+            document.getElementById('descripcion').value = '';
+            document.getElementById('referencia').value = '';
+            document.getElementById('cantidad').value = '';
+            document.getElementById('precio').value = '';
+            document.getElementById('ubicacion').value = '';
+        }
+    </script>
 </body>
 </html>
