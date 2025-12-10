@@ -1,0 +1,134 @@
+-- ===============================
+-- CREACIÓN DE TABLAS PRINCIPALES
+-- ===============================
+
+CREATE TABLE Usuario (
+    idUsuario SERIAL PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL,
+    contrasena VARCHAR(100) NOT NULL,
+    correo VARCHAR(100),
+    tipoUsuario VARCHAR(30)
+);
+
+CREATE TABLE Administrador (
+    idAdministrador SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    correo VARCHAR(100),
+    telefono VARCHAR(30),
+    idUsuario INT,
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+);
+
+CREATE TABLE Mecanico (
+    idMecanico SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    correo VARCHAR(100),
+    telefono VARCHAR(30),
+    idUsuario INT,
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+);
+
+CREATE TABLE Cliente (
+    idCliente SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    correo VARCHAR(100),
+    telefono VARCHAR(30),
+    direccion VARCHAR(150)
+);
+
+CREATE TABLE Propietario (
+    idPropietario SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    correo VARCHAR(100),
+    telefono VARCHAR(30)
+);
+
+CREATE TABLE Proveedor (
+    idProveedor SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    nit VARCHAR(50),
+    telefono VARCHAR(30),
+    email VARCHAR(100)
+);
+
+CREATE TABLE Inventario (
+    idInventario SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    cantidad INT,
+    descripcion TEXT
+);
+
+CREATE TABLE Repuesto (
+    idRepuesto SERIAL PRIMARY KEY,
+    codigo VARCHAR(50),
+    nombre VARCHAR(100),
+    cantidad INT,
+    precio FLOAT,
+    idInventario INT,
+    FOREIGN KEY (idInventario) REFERENCES Inventario(idInventario)
+);
+
+CREATE TABLE PedidoEntrada (
+    idPedidoEntrada SERIAL PRIMARY KEY,
+    idProveedor INT,
+    valorProducto FLOAT,
+    fecha DATE,
+    FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
+);
+
+CREATE TABLE PedidoSalida (
+    idPedidoSalida SERIAL PRIMARY KEY,
+    idCliente INT,
+    valorProducto FLOAT,
+    fecha DATE,
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
+);
+
+CREATE TABLE OrdenTrabajo (
+    idOrdenTrabajo SERIAL PRIMARY KEY,
+    fecha DATE,
+    descripcion TEXT,
+    idMecanico INT,
+    idCliente INT,
+    idAdministrador INT,
+    idPedidoEntrada INT,
+    idPedidoSalida INT,
+    FOREIGN KEY (idMecanico) REFERENCES Mecanico(idMecanico),
+    FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
+    FOREIGN KEY (idAdministrador) REFERENCES Administrador(idAdministrador),
+    FOREIGN KEY (idPedidoEntrada) REFERENCES PedidoEntrada(idPedidoEntrada),
+    FOREIGN KEY (idPedidoSalida) REFERENCES PedidoSalida(idPedidoSalida)
+);
+
+CREATE TABLE OrdenCompra (
+    idOrdenCompra SERIAL PRIMARY KEY,
+    idProveedor INT,
+    fecha DATE,
+    estado VARCHAR(50),
+    FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
+);
+
+CREATE TABLE Informe (
+    idInforme SERIAL PRIMARY KEY,
+    numeroInforme INT,
+    descripcion TEXT,
+    fecha DATE
+);
+
+-- ===============================
+-- RELACIONES ADICIONALES
+-- ===============================
+
+-- Relación entre Informe y Orden de Trabajo (1 a muchos)
+ALTER TABLE OrdenTrabajo
+ADD COLUMN idInforme INT,
+ADD FOREIGN KEY (idInforme) REFERENCES Informe(idInforme);
+
+-- Relación entre Informe y Orden de Compra (1 a muchos)
+ALTER TABLE OrdenCompra
+ADD COLUMN idInforme INT,
+ADD FOREIGN KEY (idInforme) REFERENCES Informe(idInforme);

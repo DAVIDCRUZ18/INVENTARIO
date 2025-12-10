@@ -3,29 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INGRESO A DASHBOARD</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <script src="/Javascrip/dashboard.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>AR MOTOS - Acceso al Sistema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0.05;
+        }
+
+        .bike-particle {
+            position: absolute;
+            color: #ff6b35;
+            font-size: 25px;
+            animation: float 20s infinite ease-in-out;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(180deg); }
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn_logo {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 8px 20px rgba(255, 107, 53, 0.3));
+        }
+
+        .btn_logo:hover {
+            transform: scale(1.05);
+        }
+
+        .Moto_principal {
+            width: 150px;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #ff6b35;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #ff6b35;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 30px;
+        }
+
+        .forgot-password a {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #ff6b35;
+        }
+
+        .btn_ingresar {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .btn_ingresar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn_ingresar:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn_ingresar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+        }
+
+        .btn_ingresar:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .register-link a {
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #f7931e;
+            text-decoration: underline;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #ff3b30;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .Moto_principal {
+                width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="background-animation" id="particles"></div>
+    
+    <div class="main-content">
+        <div class="login-container">
+            <div class="logo-section">
+                <button class="btn_logo" onclick="IrPrincipal()">
+                    <img src="/Imagenes/Moto_1.webp" alt="AR MOTOS Logo" class="Moto_principal">
+                </button>
+            </div>
 
-        <h1>Acceso con tu cuenta</h1>
-        <div>
-            <button class="btn_principal" onclick="IrPrincipal()"><img src="/Imagenes/Moto_1.webp" alt="Moto_principal" class="Moto_principal"></button>
+            <h1>Acceso al Sistema</h1>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="usuario">Usuario</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="usuario" 
+                            name="usuario" 
+                            placeholder="Ingrese su usuario"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Ingrese su contraseña"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                </div>
+
+                <div class="forgot-password">
+                    <a href="#" onclick="recuperarPassword(event)">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn_ingresar">Ingresar</button>
+            </form>
+
+            <div class="divider">
+                <span>o</span>
+            </div>
+
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="#" onclick="registrar(event)">Regístrate aquí</a>
+            </div>
         </div>
-        <div class="separator"></div>
-        <div class="usuario">ingrese el usuario</div>
-        <div class="separator"></div>
-        <div class="contraseña">ingrese el usuario</div>
-        <div class="separator"></div>
-        <div class="contenedor">
-        <button class="btn_principal" onclick="Ingresar()">INGRESAR</button>
     </div>
-    </div>
+
     <div class="footer">
-            <p>Control de existencias de Inventario Versión 17.08.24 Rev. 1</p>
+        <p>Control de existencias de Inventario Versión 17.08.24 Rev. 1</p>
     </div>
+
+    <script>
+        // Crear partículas de fondo
+        const particlesContainer = document.getElementById('particles');
+        const symbols = ['🏍️', '⚡', '🔧'];
+        
+        for (let i = 0; i < 12; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'bike-particle';
+            particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Función para manejar el login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Validación básica
+            if (!usuario || !password) {
+                showError('Por favor, complete todos los campos');
+                return false;
+            }
+
+            // Aquí va tu lógica de autenticación
+            // Este es un ejemplo - reemplázalo con tu código real
+            console.log('Intentando login con:', { usuario, password });
+            
+            // Simulación de login exitoso (reemplazar con tu función Ingresar())
+            Ingresar(usuario, password);
+            
+            return false;
+        }
+
+        // Función para mostrar errores
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 4000);
+        }
+
+        // Funciones de navegación (reemplaza con tus funciones reales)
+        function IrPrincipal() {
+            // Tu código aquí
+            console.log('Volver a principal');
+            // window.location.href = '/';
+        }
+
+        function Ingresar(usuario, password) {
+            // Tu código de autenticación aquí
+            console.log('Procesando login...');
+            // Ejemplo: window.location.href = '/dashboard';
+        }
+
+        function recuperarPassword(event) {
+            event.preventDefault();
+            // Tu código aquí
+            alert('Funcionalidad de recuperación de contraseña');
+        }
+
+        function registrar(event) {
+            window.location.href = "/html/registrousuario.html";
+        }
+
+        // Auto-focus en el campo de usuario al cargar
+        window.addEventListener('load', () => {
+            document.getElementById('usuario').focus();
+        });
+    </script>
 </body>
 </html>
