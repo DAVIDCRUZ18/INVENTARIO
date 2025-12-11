@@ -201,6 +201,11 @@
             margin-top: 10px;
         }
 
+        .btn_ingresar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn_ingresar::before {
             content: '';
             position: absolute;
@@ -214,17 +219,17 @@
             transition: width 0.6s, height 0.6s;
         }
 
-        .btn_ingresar:hover::before {
+        .btn_ingresar:hover:not(:disabled)::before {
             width: 400px;
             height: 400px;
         }
 
-        .btn_ingresar:hover {
+        .btn_ingresar:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
         }
 
-        .btn_ingresar:active {
+        .btn_ingresar:active:not(:disabled) {
             transform: translateY(0);
         }
 
@@ -283,10 +288,7 @@
             letter-spacing: 0.5px;
         }
 
-        .error-message {
-            background: rgba(255, 59, 48, 0.1);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            color: #ff3b30;
+        .error-message, .success-message {
             padding: 12px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -294,7 +296,19 @@
             display: none;
         }
 
-        .error-message.show {
+        .error-message {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #ff3b30;
+        }
+
+        .success-message {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            color: #34c759;
+        }
+
+        .error-message.show, .success-message.show {
             display: block;
             animation: shake 0.5s ease;
         }
@@ -303,6 +317,21 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -335,6 +364,7 @@
             <h1>Acceso al Sistema</h1>
 
             <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
 
             <form id="loginForm" onsubmit="return handleLogin(event)">
                 <div class="form-group">
@@ -371,7 +401,9 @@
                     <a href="#" onclick="recuperarPassword(event)">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="submit" class="btn_ingresar">Ingresar</button>
+                <button type="submit" class="btn_ingresar" id="btnIngresar">
+                    <span id="btnText">Ingresar</span>
+                </button>
             </form>
 
             <div class="divider">
@@ -389,6 +421,9 @@
     </div>
 
     <script>
+        // Configuración de la API
+        const API_URL = 'http://localhost:8080/api/usuarios'; // Cambia el puerto si es necesario
+        
         // Crear partículas de fondo
         const particlesContainer = document.getElementById('particles');
         const symbols = ['🏍️', '⚡', '🔧'];
@@ -405,12 +440,13 @@
         }
 
         // Función para manejar el login
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             
-            const usuario = document.getElementById('usuario').value;
+            const usuario = document.getElementById('usuario').value.trim();
             const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
+            const btnIngresar = document.getElementById('btnIngresar');
+            const btnText = document.getElementById('btnText');
 
             // Validación básica
             if (!usuario || !password) {
@@ -418,19 +454,93 @@
                 return false;
             }
 
-            // Aquí va tu lógica de autenticación
-            // Este es un ejemplo - reemplázalo con tu código real
-            console.log('Intentando login con:', { usuario, password });
-            
-            // Simulación de login exitoso (reemplazar con tu función Ingresar())
-            Ingresar(usuario, password);
-            
+            // Deshabilitar botón y mostrar loading
+            btnIngresar.disabled = true;
+            btnText.innerHTML = 'Ingresando<span class="loading-spinner"></span>';
+
+            try {
+                // Hacer la petición al backend
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        usuario: usuario,
+                        password: password
+                    })
+                });
+
+                // Intentar parsear la respuesta
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('Error al parsear respuesta:', e);
+                    showError('Error en el servidor. Por favor contacte al administrador.');
+                    btnIngresar.disabled = false;
+                    btnText.textContent = 'Ingresar';
+                    return false;
+                }
+
+                if (response.ok) {
+                    // Login exitoso
+                    showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
+                    
+                    // Guardar token y datos del usuario en localStorage
+                    if (data.token) {
+                        localStorage.setItem('authToken', data.token);
+                    }
+                    if (data.usuario) {
+                        localStorage.setItem('usuario', data.usuario);
+                    }
+                    if (data.rol) {
+                        localStorage.setItem('rol', data.rol);
+                    }
+                    
+                    // Redirigir después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/html/inventario.html'; // Ajusta la ruta según tu aplicación
+                    }, 1500);
+                } else {
+                    // Error en el login
+                    let errorMsg = 'Usuario o contraseña incorrectos';
+                    
+                    // Mostrar mensaje específico del servidor
+                    if (data.mensaje) {
+                        errorMsg = data.mensaje;
+                    } else if (data.error) {
+                        errorMsg = data.error;
+                    } else if (data.message) {
+                        errorMsg = data.message;
+                    }
+                    
+                    // Para error 500, mostrar mensaje más específico
+                    if (response.status === 500) {
+                        errorMsg = 'Error interno del servidor. Verifique los logs del backend.';
+                        console.error('Error 500 - Detalles:', data);
+                    }
+                    
+                    showError(errorMsg);
+                    btnIngresar.disabled = false;
+                    btnText.textContent = 'Ingresar';
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                showError('Error de conexión. Verifique que el servidor esté funcionando.');
+                btnIngresar.disabled = false;
+                btnText.textContent = 'Ingresar';
+            }
+
             return false;
         }
 
         // Función para mostrar errores
         function showError(message) {
             const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            successMessage.classList.remove('show');
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
             
@@ -439,26 +549,33 @@
             }, 4000);
         }
 
-        // Funciones de navegación (reemplaza con tus funciones reales)
-        function IrPrincipal() {
-            // Tu código aquí
-            console.log('Volver a principal');
-            // window.location.href = '/';
+        // Función para mostrar mensajes de éxito
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.classList.remove('show');
+            successMessage.textContent = message;
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 4000);
         }
 
-        function Ingresar(usuario, password) {
-            // Tu código de autenticación aquí
-            console.log('Procesando login...');
-            // Ejemplo: window.location.href = '/dashboard';
+        // Funciones de navegación
+        function IrPrincipal() {
+            window.location.href = '/';
         }
 
         function recuperarPassword(event) {
             event.preventDefault();
-            // Tu código aquí
-            alert('Funcionalidad de recuperación de contraseña');
+            // Redirigir a página de recuperación de contraseña
+            window.location.href = '/html/recuperar-password.html';
         }
 
         function registrar(event) {
+            event.preventDefault();
             window.location.href = "/html/registrousuario.html";
         }
 
@@ -466,6 +583,20 @@
         window.addEventListener('load', () => {
             document.getElementById('usuario').focus();
         });
+
+        // Verificar si el backend está disponible al cargar la página
+        async function verificarConexion() {
+            try {
+                const response = await fetch(`${API_URL}/ping`);
+                if (!response.ok) {
+                    console.warn('El servidor no responde correctamente');
+                }
+            } catch (error) {
+                console.warn('No se puede conectar con el servidor:', error);
+            }
+        }
+
+        verificarConexion();
     </script>
 </body>
 </html>

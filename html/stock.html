@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR MOTOS - Stock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-section p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .date-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .navigation {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-menu li {
+            flex: 1;
+        }
+
+        .nav-menu a {
+            display: block;
+            padding: 18px 30px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-menu a:hover {
+            background: #f5f5f5;
+            color: #ff6b35;
+        }
+
+        .nav-menu a.active {
+            background: #ff6b35;
+            color: white;
+            border-bottom-color: #f7931e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.total {
+            border-left: 5px solid #2196F3;
+        }
+
+        .stat-card.low {
+            border-left: 5px solid #f44336;
+        }
+
+        .stat-card.available {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .btn-export {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .status-badge.disponible {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.bajo {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-badge.agotado {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <img src="/Imagenes/Moto_1.webp" alt="AR MOTOS Logo">
+            <div>
+                <h1>AR MOTOS</h1>
+                <p>CONSULTA DE STOCK</p>
+            </div>
+        </div>
+        <div class="date-display" id="currentDate"></div>
+    </header>
+
+    <nav class="navigation">
+        <ul class="nav-menu">
+            <li><a href="inventario.html">Inicio</a></li>
+            <li><a href="inventario.html">Inventario</a></li>
+            <li><a href="salidas.html">Salidas</a></li>
+            <li><a href="stock.html" class="active">Stock</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2 class="page-title">Consulta de Stock de Productos</h2>
+
+        <div class="search-section">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label for="searchCodigo">Código</label>
+                    <input type="text" id="searchCodigo" placeholder="Buscar por código">
+                </div>
+
+                <div class="form-group">
+                    <label for="searchDescripcion">Descripción</label>
+                    <input type="text" id="searchDescripcion" placeholder="Buscar por descripción">
+                </div>
+
+                <div class="form-group">
+                    <label for="searchUbicacion">Ubicación</label>
+                    <input type="text" id="searchUbicacion" placeholder="Buscar por ubicación">
+                </div>
+
+                <button class="btn-search" onclick="buscarProductos()">
+                    🔍 Buscar
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-value" id="totalProductos">0</div>
+                <div class="stat-label">Total Productos</div>
+            </div>
+            <div class="stat-card available">
+                <div class="stat-value" id="productosDisponibles">0</div>
+                <div class="stat-label">Disponibles</div>
+            </div>
+            <div class="stat-card low">
+                <div class="stat-value" id="productosStock">0</div>
+                <div class="stat-label">Stock Bajo</div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Inventario Actual</h3>
+                <button class="btn-export" onclick="exportarExcel()">
+                    📊 Exportar Excel
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Referencia</th>
+                            <th>Cantidad</th>
+                            <th>Ubicación</th>
+                            <th>V. Unitario</th>
+                            <th>V. Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- Datos de ejemplo -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo
+        let inventario = [
+            { codigo: '202', descripcion: 'Aceite Mobil 20W50', referencia: 'S256', cantidad: 2, ubicacion: 'casa', vUnitario: 2.00, estado: 'bajo' },
+            { codigo: '101', descripcion: 'Llanta Michelin 180/55', referencia: 'M789', cantidad: 15, ubicacion: 'bodega A', vUnitario: 85.50, estado: 'disponible' },
+            { codigo: '305', descripcion: 'Filtro de aire K&N', referencia: 'KN456', cantidad: 0, ubicacion: 'bodega B', vUnitario: 35.00, estado: 'agotado' },
+            { codigo: '420', descripcion: 'Batería 12V YTX14', referencia: 'BTX14', cantidad: 8, ubicacion: 'almacen', vUnitario: 120.00, estado: 'disponible' },
+            { codigo: '550', descripcion: 'Cadena de transmisión', referencia: 'CH520', cantidad: 3, ubicacion: 'bodega A', vUnitario: 45.00, estado: 'bajo' }
+        ];
+
+        let inventarioFiltrado = [...inventario];
+
+        // Mostrar fecha actual
+        function mostrarFecha() {
+            const fecha = new Date();
+            const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            document.getElementById('currentDate').textContent = fecha.toLocaleDateString('es-ES', opciones);
+        }
+
+        // Renderizar tabla
+        function renderizarTabla(datos = inventarioFiltrado) {
+            const tbody = document.getElementById('stockTableBody');
+            
+            if (datos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div>
+                                <p style="font-size: 1.2rem; margin-bottom: 10px;">No se encontraron productos</p>
+                                <p>Intente con otros criterios de búsqueda</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = datos.map(item => {
+                const vTotal = (item.cantidad * item.vUnitario).toFixed(2);
+                let estadoClass = 'disponible';
+                let estadoTexto = 'Disponible';
+                
+                if (item.cantidad === 0) {
+                    estadoClass = 'agotado';
+                    estadoTexto = 'Agotado';
+                } else if (item.cantidad <= 5) {
+                    estadoClass = 'bajo';
+                    estadoTexto = 'Stock Bajo';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${item.codigo}</strong></td>
+                        <td>${item.descripcion}</td>
+                        <td>${item.referencia}</td>
+                        <td><strong>${item.cantidad}</strong></td>
+                        <td>${item.ubicacion}</td>
+                        <td>$${item.vUnitario.toFixed(2)}</td>
+                        <td><strong>$${vTotal}</strong></td>
+                        <td>
+                            <span class="status-badge ${estadoClass}">
+                                ${estadoTexto}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            actualizarEstadisticas(datos);
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas(datos) {
+            const total = datos.length;
+            const disponibles = datos.filter(p => p.cantidad > 5).length;
+            const stockBajo = datos.filter(p => p.cantidad > 0 && p.cantidad <= 5).length;
+
+            document.getElementById('totalProductos').textContent = total;
+            document.getElementById('productosDisponibles').textContent = disponibles;
+            document.getElementById('productosStock').textContent = stockBajo;
+        }
+
+        // Buscar productos
+        function buscarProductos() {
+            const codigo = document.getElementById('searchCodigo').value.toLowerCase();
+            const descripcion = document.getElementById('searchDescripcion').value.toLowerCase();
+            const ubicacion = document.getElementById('searchUbicacion').value.toLowerCase();
+
+            inventarioFiltrado = inventario.filter(item => {
+                const matchCodigo = !codigo || item.codigo.toLowerCase().includes(codigo);
+                const matchDescripcion = !descripcion || item.descripcion.toLowerCase().includes(descripcion);
+                const matchUbicacion = !ubicacion || item.ubicacion.toLowerCase().includes(ubicacion);
+                
+                return matchCodigo && matchDescripcion && matchUbicacion;
+            });
+
+            renderizarTabla(inventarioFiltrado);
+        }
+
+        // Exportar a Excel (simulado)
+        function exportarExcel() {
+            alert('Funcionalidad de exportación a Excel.\nEn producción, esto generaría un archivo Excel con todos los datos del inventario.');
+            console.log('Exportando inventario:', inventarioFiltrado);
+        }
+
+        // Evento de búsqueda al presionar Enter
+        document.querySelectorAll('#searchCodigo, #searchDescripcion, #searchUbicacion').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarProductos();
+                }
+            });
+        });
+
+        // Inicializar
+        mostrarFecha();
+        renderizarTabla();
+    </script>
+</body>
+</html>
